@@ -11,10 +11,14 @@ from dotenv import load_dotenv, find_dotenv
 from langchain_groq import ChatGroq
 from helper import get_weather
 
-load_dotenv(find_dotenv())
-os.environ['LANGCHAIN_API_KEY'] = os.getenv('LANGCHAIN_API_KEY')
-os.environ['LANGCHAIN_TRACING_V2'] = 'true'
-groq_api_key = os.getenv('GROQ_API_KEY')
+if os.path.exists():
+    load_dotenv(find_dotenv())
+LANGCHAIN_API_KEY = st.secrets.get("LANGCHAIN_API_KEY",os.getenv('LANGCHAIN_API_KEY'))
+GROQ_API_KEY = st.secrets.get("GROQ_API_KEY", os.getenv("GROQ_API_KEY"))
+if LANGCHAIN_API_KEY:
+    os.environ['LANGCHAIN_API_KEY'] = LANGCHAIN_API_KEY
+    os.environ['LANGCHAIN_TRACING_V2'] = 'true'
+groq_api_key = GROQ_API_KEY
 
 @tool
 def function_call(city:str) -> str:
