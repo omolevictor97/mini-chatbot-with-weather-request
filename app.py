@@ -9,10 +9,11 @@ from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
 from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv, find_dotenv
 from langchain_groq import ChatGroq
-from helper import get_weather
+from helper import get_weather, generate_image
 
 if os.path.exists(".env"):
     load_dotenv(find_dotenv())
+
 LANGCHAIN_API_KEY = st.secrets.get("LANGCHAIN_API_KEY",os.getenv('LANGCHAIN_API_KEY'))
 GROQ_API_KEY = st.secrets.get("GROQ_API_KEY", os.getenv("GROQ_API_KEY"))
 if LANGCHAIN_API_KEY:
@@ -29,6 +30,15 @@ def function_call(city:str) -> str:
     if city:
         return get_weather(city)
     return
+
+@tool
+def image_creation_tool(prompt:str):
+    """
+    It calls a generate_image function from helper module
+    """
+    if prompt:
+        return generate_image(prompt)
+    return 
 
 
 prompt = ChatPromptTemplate(
@@ -47,7 +57,7 @@ def generate_response(question, api_key, llm, temperature, max_tokens):
         # max_tokens=max_tokens
     )
     
-    tools = [function_call]
+    tools = [function_call, image_creation_tool]
 
     model_with_tools = model.bind_tools(tools)
     messages = [
@@ -61,13 +71,18 @@ def generate_response(question, api_key, llm, temperature, max_tokens):
             if tool_call['name'] == 'function_call':
                 tool_output = function_call.invoke(tool_call['args'])
 
-                messages.append(first_response)
-                messages.append(ToolMessage(content=str(tool_output), tool_call_id=tool_call["id"]))
+            elif tool_call['name'] == 'image_creation_tool':
+                tool_output = function_call.invoke(tool_call["args"])
+            else:
+                continue
 
-                for chunk in model_with_tools.stream(messages):
-                    if chunk.content:
-                        yield chunk.content
-                        time.sleep(0.04)
+            messages.append(first_response)
+            messages.append(ToolMessage(content=str(tool_output), tool_call_id=tool_call["id"]))
+
+            for chunk in model_with_tools.stream(messages):
+                if chunk.content:
+                    yield chunk.content
+                    time.sleep(0.04)
     else:
         # If no tool call is requested, simply stream the initial LLM output smoothly
         for chunk in model_with_tools.stream(messages):
