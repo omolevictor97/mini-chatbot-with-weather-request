@@ -11,7 +11,7 @@ from dotenv import load_dotenv, find_dotenv
 from langchain_groq import ChatGroq
 from helper import get_weather
 
-if os.path.exists():
+if os.path.exists(".env"):
     load_dotenv(find_dotenv())
 LANGCHAIN_API_KEY = st.secrets.get("LANGCHAIN_API_KEY",os.getenv('LANGCHAIN_API_KEY'))
 GROQ_API_KEY = st.secrets.get("GROQ_API_KEY", os.getenv("GROQ_API_KEY"))
