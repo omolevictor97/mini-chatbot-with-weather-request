@@ -1,8 +1,11 @@
 import requests
 import streamlit as st
 import os
-api_key = st.secrets.get(
-    'WEATHER_API_KEY', os.getenv('WEATHER_API_KEY', "33d915f1a1ea449374cf834794a3de91"))
+WEATHER_API_KEY = st.secrets.get('WEATHER_API_KEY', os.getenv('WEATHER_API_KEY'))
+
+if WEATHER_API_KEY:
+    api_key = WEATHER_API_KEY
+
 def get_weather(city:str):
     """The function takes city and returns the weather condition of the place"""
     weather_data = requests.get(f"https://api.openweathermap.org/data/2.5/weather?q={city}&units=imperial&APPID={api_key}")
