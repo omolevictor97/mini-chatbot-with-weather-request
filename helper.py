@@ -1,6 +1,7 @@
 import requests
 import streamlit as st
 import os
+import urllib.parse
 WEATHER_API_KEY = st.secrets.get('WEATHER_API_KEY', os.getenv('WEATHER_API_KEY'))
 
 if WEATHER_API_KEY:
@@ -18,3 +19,18 @@ def get_weather(city:str):
 
     return f"""The weather in {city} is: {weather})
             The temperature in {city} is: {temp}ºF"""
+
+# New Tool: Generates an image and returns a dynamic markdown image URL
+
+def generate_image(prompt: str) -> str:
+    """
+    Call this tool ONLY when the user explicitly asks to create, draw, generate, 
+    or design an image, painting, photo, or visual artwork.
+    """
+    # Clean the prompt and convert space characters to an API friendly URL format
+    encoded_prompt = urllib.parse.quote(prompt.strip())
+    # Generate a free, dynamic image URL (Flux model variant)
+    image_url = f"https://pollinations.ai{encoded_prompt}?width=1024&height=1024&model=flux&enhance=true"
+    
+    # Return standard markdown image syntax so Streamlit natively parses it
+    return f"Here is your generated image:\n\n![AI Image]({image_url})"
