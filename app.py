@@ -72,7 +72,7 @@ def generate_response(question, api_key, llm, temperature, max_tokens):
                 tool_output = function_call.invoke(tool_call['args'])
 
             elif tool_call['name'] == 'image_creation_tool':
-                tool_output = function_call.invoke(tool_call["args"])
+                tool_output = image_creation_tool.invoke(tool_call["args"])
             else:
                 continue
 
