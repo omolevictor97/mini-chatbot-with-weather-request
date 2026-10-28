@@ -7,3 +7,13 @@ langchain-groq
 langchain-tavily
 langchain-google-vertexai
 streamlit
+arxiv
+wikipedia
+pandas
+openai
+duckduckgo-search
+pymupdf
+sentence-transformers
+faiss-cpu
+langchain-huggingface
+duckdb
